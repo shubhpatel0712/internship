@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Management System</title>
+<style>
+body { font-family: Arial; padding: 20px; background: #f8f8f8; }
+.container { max-width: 600px; margin: auto; background: #fff; padding: 20px;
+             border-radius: 10px; box-shadow: 0 0 10px #ddd; }
+
+input, select { width: 100%; padding: 10px; margin: 5px 0 15px 0; }
+button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+button:hover { opacity: 0.8; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { padding: 10px; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) { background: #f3f3f3; }
+
+.btn { background: #007bff; color: white; }
+.btn-delete { background: red; color: white; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Student Management System</h2>
+
+<form id="form">
+  <label>Student Name</label>
+  <input type="text" id="name">
+
+  <label>Email</label>
+  <input type="email" id="email">
+
+  <label>Mobile Number</label>
+  <input type="text" id="mobile">
+
+  <label>Course</label>
+  <select id="course">
+    <option value="">Select</option>
+    <option>Computer Science</option>
+    <option>Mathematics</option>
+    <option>Physics</option>
+  </select>
+
+  <label>Gender</label><br>
+  <input type="radio" name="gender" value="Male"> Male
+  <input type="radio" name="gender" value="Female"> Female
+  <input type="radio" name="gender" value="Other"> Other
+  <br><br>
+
+  <button type="submit" class="btn">Submit</button>
+</form>
+
+<table id="table">
+  <thead>
+    <tr>
+      <th>Name</th><th>Email</th><th>Mobile</th>
+      <th>Course</th><th>Gender</th><th>Delete</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<script>
+// Load existing data
+let students = JSON.parse(localStorage.getItem("students") || "[]");
+renderTable();
+
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  let name = document.getElementById("name").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let mobile = document.getElementById("mobile").value.trim();
+  let course = document.getElementById("course").value.trim();
+  let gender = document.querySelector("input[name='gender']:checked");
+
+  if(!name || !email || !mobile || !course || !gender){
+    alert("Please fill all fields!");
+    return;
+  }
+
+  let student = {
+    name, email, mobile, course, gender: gender.value
+  };
+
+  students.push(student);
+  localStorage.setItem("students", JSON.stringify(students));
+
+  renderTable();
+  this.reset();
+});
+
+function renderTable(){
+  let tbody = document.querySelector("#table tbody");
+  tbody.innerHTML = "";
+
+  students.forEach((s, index) => {
+    let row = `
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.email}</td>
+        <td>${s.mobile}</td>
+        <td>${s.course}</td>
+        <td>${s.gender}</td>
+        <td><button class="btn-delete" onclick="deleteStudent(${index})">X</button></td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+  });
+}
+
+function deleteStudent(i){
+  students.splice(i, 1);
+  localStorage.setItem("students", JSON.stringify(students));
+  renderTable();
+}
+</script>
+
+</body>
+</html>
